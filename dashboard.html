@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <link rel="stylesheet" href="style.css">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Profesional</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background: #1E1E2F;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #2A2D3E;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      background: #3B3E56;
+      padding: 12px 25px;
+      border-radius: 10px;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .menu a:hover {
+      background: #ffcc00;
+      color: #1E1E2F;
+    }
+
+    .button {
+      padding: 12px 24px;
+      border: none;
+      background: #ffcc00;
+      color: #1E1E2F;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 25px;
+      margin-top: 20px;
+      transition: background 0.3s, transform 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .button:hover {
+      background: #ff9900;
+      transform: scale(1.1);
+    }
+
+    #clock {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    /* Dark & Light Mode */
+    .toggle-mode {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      background: #3B3E56;
+      padding: 8px 12px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toggle-mode i {
+      font-size: 18px;
+    }
+
+    .light-mode {
+      background: #f4f4f4;
+      color: black;
+    }
+
+    .light-mode .container {
+      background: white;
+      color: black;
+    }
+
+    .light-mode .menu a {
+      background: #e0e0e0;
+      color: black;
+    }
+
+    .light-mode .menu a:hover {
+      background: #ffcc00;
+      color: black;
+    }
+
+    .light-mode .toggle-mode {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="toggle-mode" onclick="toggleMode()">
+    <i class="fas fa-moon"></i> <span>Dark Mode</span>
+  </div>
+
+  <div class="container">
+    <h1>Selamat Datang di Dashboard</h1>
+    <p id="welcomeMessage"></p>
+    <p id="clock"></p>
+    
+     <div class="menu">
+  <a href="profil.html"><i class="fas fa-user"></i> Profil</a>
+  <a href="#"><i class="fas fa-cog"></i> Pengaturan</a>
+  <a href="#"><i class="fas fa-history"></i> Riwayat</a>
+</div>
+    
+    <button class="button" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      let storedUser = JSON.parse(sessionStorage.getItem("loggedInUser"));
+      
+      if (!storedUser) {
+        alert("Silakan login terlebih dahulu.");
+        window.location.href = "index.html";
+      } else {
+        document.getElementById("welcomeMessage").textContent = "Halo, " + storedUser.nama + "!";
+      }
+
+      updateClock();
+      setInterval(updateClock, 1000);
+      loadMode();
+    });
+
+    function updateClock() {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const seconds = now.getSeconds().toString().padStart(2, '0');
+      document.getElementById("clock").textContent = `Waktu saat ini: ${hours}:${minutes}:${seconds}`;
+    }
+
+    function logout() {
+      let confirmLogout = confirm("Apakah Anda yakin ingin logout?");
+      if (confirmLogout) {
+        sessionStorage.removeItem("loggedInUser");
+        alert("Anda telah logout.");
+        window.location.href = "index.html";
+      }
+    }
+
+    function toggleMode() {
+      const body = document.body;
+      body.classList.toggle("light-mode");
+
+      let modeText = document.querySelector(".toggle-mode span");
+      let modeIcon = document.querySelector(".toggle-mode i");
+
+      if (body.classList.contains("light-mode")) {
+        localStorage.setItem("theme", "light");
+        modeText.textContent = "Light Mode";
+        modeIcon.classList.replace("fa-moon", "fa-sun");
+      } else {
+        localStorage.setItem("theme", "dark");
+        modeText.textContent = "Dark Mode";
+        modeIcon.classList.replace("fa-sun", "fa-moon");
+      }
+    }
+
+    function loadMode() {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "light") {
+        document.body.classList.add("light-mode");
+        document.querySelector(".toggle-mode span").textContent = "Light Mode";
+        document.querySelector(".toggle-mode i").classList.replace("fa-moon", "fa-sun");
+      }
+    }
+  </script>
+</body>
+</html>
